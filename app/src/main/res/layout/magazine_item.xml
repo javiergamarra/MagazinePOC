@@ -10,9 +10,14 @@
 		android:layout_centerInParent="true"/>
 
 	<ImageView
-		android:id="@+id/magazine_image"
-		android:layout_width="match_parent"
-		android:layout_height="match_parent"
-		android:scaleType="centerInside"/>
+	android:id="@+id/magazine_image"
+	android:layout_width="match_parent"
+	android:layout_height="match_parent"
+	android:scaleType="centerInside"/>
+
+	<!--<WebView-->
+		<!--android:id="@+id/magazine_webview"-->
+		<!--android:layout_width="match_parent"-->
+		<!--android:layout_height="match_parent"/>-->
 
 </RelativeLayout>
