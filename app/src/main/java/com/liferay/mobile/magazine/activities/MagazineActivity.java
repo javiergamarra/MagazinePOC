@@ -17,9 +17,9 @@ import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.ListView;
 
+import com.liferay.mobile.magazine.R;
 import com.liferay.mobile.magazine.utils.MenuAdapter;
 import com.liferay.mobile.magazine.utils.PicassoUtil;
-import com.liferay.mobile.magazine.R;
 import com.liferay.mobile.screens.assetlist.AssetEntry;
 import com.liferay.mobile.screens.ddl.model.Field;
 
@@ -97,7 +97,7 @@ public class MagazineActivity extends AppCompatActivity implements AdapterView.O
 
 			ImageView imageView = (ImageView) rootView.findViewById(R.id.magazine_image);
 
-			PicassoUtil.getImage(url).into(imageView);
+			PicassoUtil.getImageWithoutCache(url).into(imageView);
 
 			return rootView;
 		}
