@@ -6,14 +6,13 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.liferay.mobile.magazine.R;
-import com.liferay.mobile.magazine.activities.MainActivity;
 import com.liferay.mobile.magazine.utils.PicassoUtil;
 import com.liferay.mobile.screens.assetlist.AssetEntry;
 import com.liferay.mobile.screens.base.list.BaseListAdapter;
 import com.liferay.mobile.screens.base.list.BaseListAdapterListener;
 import com.liferay.mobile.screens.ddl.model.Field;
 
-import java.io.File;
+import static com.liferay.mobile.magazine.utils.FileUtils.isAssetDownloaded;
 
 public class AssetMagazineHolder extends BaseListAdapter.ViewHolder implements View.OnClickListener {
 
@@ -38,41 +37,14 @@ public class AssetMagazineHolder extends BaseListAdapter.ViewHolder implements V
 		magazineTitle.setText((String) assetEntry.getFieldByName("magazineTitle").getCurrentValue());
 		magazinePrize.setText((String) assetEntry.getFieldByName("price").getCurrentValue());
 
-		checkIfFileExists(assetEntry);
-
-		magazineProgress.setProgress(MainActivity.isAssetDownloaded(assetEntry) ? 100 : 0);
+		magazineProgress.setProgress(isAssetDownloaded(assetEntry) ? 100 : 0);
 
 		Field magazineThumbnail = assetEntry.getFieldByName("magazineThumbnail");
 		if (magazineThumbnail != null) {
 			String url = (String) magazineThumbnail.getCurrentValue();
-
 			PicassoUtil.getImageWithCache(url).into(imageView);
 		}
 
-	}
-
-	private void checkIfFileExists(AssetEntry assetEntry) {
-		for (Field field : assetEntry.getChapters()) {
-			String currentValue = (String) field.getCurrentValue();
-
-			if (currentValue.contains("storage")) {
-				continue;
-			}
-			int index = currentValue.indexOf("?img_id");
-			int lastIndex = currentValue.lastIndexOf("&");
-			String path = currentValue.substring(index + 8, lastIndex);
-
-			File f = new File(PicassoUtil.getDownloadDirectory());
-			for (File file : f.listFiles()) {
-
-				if (file.isFile()) {
-					String[] filename = file.getName().split("\\.(?=[^\\.]+$)");
-					if (filename[0].equalsIgnoreCase(path)) {
-						field.setCurrentValue(file.getAbsolutePath());
-					}
-				}
-			}
-		}
 	}
 
 	private ImageView imageView;

@@ -7,6 +7,7 @@ import android.util.AttributeSet;
 import android.widget.ProgressBar;
 
 import com.liferay.mobile.magazine.R;
+import com.liferay.mobile.magazine.utils.FileUtils;
 import com.liferay.mobile.screens.assetlist.AssetEntry;
 import com.liferay.mobile.screens.base.list.BaseListScreenletView;
 import com.liferay.mobile.screens.ddl.XSDParser;
@@ -16,9 +17,13 @@ import com.liferay.mobile.screens.viewsets.defaultviews.ddl.list.DividerItemDeco
 
 import org.xml.sax.SAXException;
 
+import java.io.File;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+
+import static com.liferay.mobile.magazine.utils.FileUtils.getPath;
+import static com.liferay.mobile.magazine.utils.FileUtils.isFieldDownloaded;
 
 /**
  * @author Javier Gamarra
@@ -50,7 +55,7 @@ public class AssetMagazineListView
 				List<Field> formFields = xsdParser.parse((String) ((Map) object.get("structure")).get("xsd"), Locale.ENGLISH);
 				List<Field> fields = xsdParser.createForm(formFields, (String) object.get("content"));
 				magazine.setFields(fields);
-
+				checkIfFileExists(magazine);
 			}
 		}
 		catch (SAXException e) {
@@ -91,4 +96,24 @@ public class AssetMagazineListView
 		}
 	}
 
+	private void checkIfFileExists(AssetEntry assetEntry) {
+		for (Field field : assetEntry.getChapters()) {
+			if (isFieldDownloaded(field)) {
+				continue;
+			}
+
+			String path = getPath((String) field.getCurrentValue(), "");
+
+			File tmpDir = new File(FileUtils.getDownloadDirectory());
+			for (File file : tmpDir.listFiles()) {
+
+				if (file.isFile()) {
+					String[] filename = file.getName().split("(?=[^\\.]+$)");
+					if (filename[0].contains(path)) {
+						field.setCurrentValue(file.getAbsolutePath());
+					}
+				}
+			}
+		}
+	}
 }
