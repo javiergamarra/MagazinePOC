@@ -78,7 +78,14 @@ public class FileUtils {
 		return field;
 	}
 
-	public static void createFile(InputStream is, File file) throws IOException {
+	@NonNull
+	public static String getPath(String currentValue, String extension) {
+		int index = currentValue.indexOf("?img_id");
+		int lastIndex = currentValue.lastIndexOf("&");
+		return currentValue.substring(index + 8, lastIndex) + "." + extension;
+	}
+
+	private static void createFile(InputStream is, File file) throws IOException {
 		BufferedInputStream input = new BufferedInputStream(is);
 		OutputStream output = new FileOutputStream(file);
 
@@ -93,13 +100,5 @@ public class FileUtils {
 		output.close();
 		input.close();
 	}
-
-	@NonNull
-	public static String getPath(String currentValue, String extension) {
-		int index = currentValue.indexOf("?img_id");
-		int lastIndex = currentValue.lastIndexOf("&");
-		return currentValue.substring(index + 8, lastIndex) + "." + extension;
-	}
-
 	private static final String PATH = Environment.getExternalStorageDirectory() + "/tmp/magazinePOC/";
 }

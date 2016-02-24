@@ -4,4 +4,8 @@
 
 	<string name="navigation_drawer_open">Open navigation drawer</string>
 	<string name="navigation_drawer_close">Close navigation drawer</string>
+	<string name="thumbnail_of_the_chapter">thumbnail of the chapter</string>
+	<string name="magazine_first_page">magazine first page</string>
+	<string name="downloading">Downloading...</string>
+	<string name="failed">Failed!</string>
 </resources>

@@ -39,7 +39,7 @@ public class MainActivity extends AppCompatActivity implements BaseListListener<
 		Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
 		setSupportActionBar(toolbar);
 
-		SessionContext.createBasicSession("javier.gamarra", "***REMOVED***");
+		SessionContext.createBasicSession("javier.gamarra", "1");
 
 		AssetListScreenlet assetListScreenlet = (AssetListScreenlet) findViewById(R.id.magazines);
 		assetListScreenlet.setListener(this);
@@ -60,7 +60,7 @@ public class MainActivity extends AppCompatActivity implements BaseListListener<
 			downloadProgress.setProgress(0);
 
 			final TextView downloadText = (TextView) view.findViewById(R.id.download_text);
-			downloadText.setText("Downloading...");
+			downloadText.setText(R.string.downloading);
 
 			Observable.from(assetEntry.getChapters())
 				.map(new Func1<Field, Object>() {
@@ -89,7 +89,7 @@ public class MainActivity extends AppCompatActivity implements BaseListListener<
 
 					@Override
 					public void onError(Throwable e) {
-						downloadText.setText("Failed!");
+						downloadText.setText(R.string.failed);
 						LiferayLogger.e("Error!" + e.getMessage());
 					}
 

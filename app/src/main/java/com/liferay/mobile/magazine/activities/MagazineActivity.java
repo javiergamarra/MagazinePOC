@@ -13,17 +13,14 @@ import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.webkit.WebView;
 import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.ListView;
 
 import com.liferay.mobile.magazine.R;
-import com.liferay.mobile.magazine.utils.FileUtils;
 import com.liferay.mobile.magazine.utils.MenuAdapter;
 import com.liferay.mobile.magazine.utils.PicassoUtil;
 import com.liferay.mobile.screens.assetlist.AssetEntry;
-import com.liferay.mobile.screens.context.LiferayServerContext;
 import com.liferay.mobile.screens.ddl.model.Field;
 
 public class MagazineActivity extends AppCompatActivity implements AdapterView.OnItemClickListener {
@@ -100,21 +97,19 @@ public class MagazineActivity extends AppCompatActivity implements AdapterView.O
 
 
 			ImageView imageView = (ImageView) rootView.findViewById(R.id.magazine_image);
-
 			PicassoUtil.getImageWithoutCache(url).into(imageView);
 
-//			if (!url.contains("storage")) {
+//			if (url != null && !url.contains("storage")) {
 //				url = LiferayServerContext.getServer() + url;
 //			}
 //			WebView webView = (WebView) rootView.findViewById(R.id.magazine_webview);
 //			webView.getSettings().setSupportZoom(true);
-////			webView.getSettings().setBuiltInZoomControls(true);
+//			webView.getSettings().setBuiltInZoomControls(true);
 //
 //			String data = "<body><div style=\"height: 100%;display: flex;align-items: center;justify-content: center\"> <img " +
 //				"src=\"" + url + "\" width=\"100%\" /></div></body>";
 //
 //			webView.loadDataWithBaseURL("file:///android_asset/", data, "text/html", "utf-8", null);
-
 
 			return rootView;
 		}

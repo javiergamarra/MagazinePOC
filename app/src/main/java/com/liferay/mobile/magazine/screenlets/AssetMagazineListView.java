@@ -31,8 +31,6 @@ import static com.liferay.mobile.magazine.utils.FileUtils.isFieldDownloaded;
 public class AssetMagazineListView
 	extends BaseListScreenletView<AssetEntry, AssetMagazineHolder, AssetMagazineAdapter> {
 
-	public static final int SPAN_COUNT = 2;
-
 	public AssetMagazineListView(Context context) {
 		super(context);
 	}
@@ -116,4 +114,5 @@ public class AssetMagazineListView
 			}
 		}
 	}
+	private static final int SPAN_COUNT = 2;
 }

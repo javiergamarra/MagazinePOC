@@ -42,14 +42,17 @@ public class AssetMagazineHolder extends BaseListAdapter.ViewHolder implements V
 		Field magazineThumbnail = assetEntry.getFieldByName("magazineThumbnail");
 		if (magazineThumbnail != null) {
 			String url = (String) magazineThumbnail.getCurrentValue();
-			PicassoUtil.getImageWithCache(url).into(imageView);
+			PicassoUtil
+				.getImageWithCache(url)
+				.placeholder(R.drawable.progress_animation)
+				.into(imageView);
 		}
 
 	}
 
-	private ImageView imageView;
-	private TextView magazineTitle;
-	private TextView magazinePrize;
-	private ProgressBar magazineProgress;
-	private BaseListAdapterListener _listener;
+	private final ImageView imageView;
+	private final TextView magazineTitle;
+	private final TextView magazinePrize;
+	private final ProgressBar magazineProgress;
+	private final BaseListAdapterListener _listener;
 }

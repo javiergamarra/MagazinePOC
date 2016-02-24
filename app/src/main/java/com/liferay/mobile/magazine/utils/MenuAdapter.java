@@ -32,7 +32,10 @@ public class MenuAdapter extends ArrayAdapter<Object[]> {
 
 		ImageView imageView = (ImageView) convertView.findViewById(R.id.magazine_thumbnail);
 
-		PicassoUtil.getImageWithCache((String) assetEntry[1]).into(imageView);
+		PicassoUtil
+			.getImageWithCache((String) assetEntry[1])
+			.placeholder(R.drawable.progress_animation)
+			.into(imageView);
 
 		return convertView;
 	}

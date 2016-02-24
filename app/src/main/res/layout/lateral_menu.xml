@@ -10,6 +10,7 @@
 		android:id="@+id/magazine_thumbnail"
 		android:layout_width="70dp"
 		android:layout_height="70dp"
+		android:contentDescription="@string/thumbnail_of_the_chapter"
 		android:scaleType="fitStart"/>
 
 	<TextView
