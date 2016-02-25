@@ -35,8 +35,10 @@
 			android:id="@+id/magazines"
 			android:layout_width="match_parent"
 			android:layout_height="match_parent"
+			app:autoLoad="false"
 			app:groupId="@string/group_magazine_id"
 			app:layoutId="@layout/custom_magazine_screenlet"
+			app:offlinePolicy="CACHE_FIRST"
 			app:portletItemName="magazine1"/>
 
 	</RelativeLayout>

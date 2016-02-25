@@ -11,9 +11,14 @@ import android.widget.TextView;
 import com.liferay.mobile.magazine.R;
 import com.liferay.mobile.screens.assetlist.AssetEntry;
 import com.liferay.mobile.screens.assetlist.AssetListScreenlet;
+import com.liferay.mobile.screens.auth.BasicAuthMethod;
+import com.liferay.mobile.screens.auth.login.LoginListener;
+import com.liferay.mobile.screens.auth.login.interactor.LoginBasicInteractor;
 import com.liferay.mobile.screens.base.list.BaseListListener;
 import com.liferay.mobile.screens.base.list.BaseListScreenlet;
 import com.liferay.mobile.screens.context.SessionContext;
+import com.liferay.mobile.screens.context.User;
+import com.liferay.mobile.screens.context.storage.CredentialsStorageBuilder;
 import com.liferay.mobile.screens.ddl.model.Field;
 import com.liferay.mobile.screens.util.LiferayLogger;
 
@@ -30,7 +35,7 @@ import static com.liferay.mobile.magazine.utils.FileUtils.downloadImage;
 import static com.liferay.mobile.magazine.utils.FileUtils.isFieldDownloaded;
 import static com.liferay.mobile.magazine.utils.FileUtils.triedToDownload;
 
-public class MainActivity extends AppCompatActivity implements BaseListListener<AssetEntry> {
+public class MainActivity extends AppCompatActivity implements BaseListListener<AssetEntry>, LoginListener {
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -39,10 +44,7 @@ public class MainActivity extends AppCompatActivity implements BaseListListener<
 		Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
 		setSupportActionBar(toolbar);
 
-		SessionContext.createBasicSession("javier.gamarra", "1");
-
-		AssetListScreenlet assetListScreenlet = (AssetListScreenlet) findViewById(R.id.magazines);
-		assetListScreenlet.setListener(this);
+		triedToLogin();
 	}
 
 	@Override
@@ -126,4 +128,50 @@ public class MainActivity extends AppCompatActivity implements BaseListListener<
 
 	}
 
+	@Override
+	public void onLoginSuccess(User user) {
+
+		SessionContext.storeCredentials(CredentialsStorageBuilder.StorageType.SHARED_PREFERENCES);
+
+		AssetListScreenlet assetListScreenlet = (AssetListScreenlet) findViewById(R.id.magazines);
+		assetListScreenlet.setListener(this);
+		assetListScreenlet.loadPage(0);
+	}
+
+	@Override
+	public void onLoginFailure(Exception e) {
+
+	}
+
+	@Override
+	protected void onStop() {
+		super.onStop();
+		if (_loginInteractor != null) {
+			_loginInteractor.onScreenletDetached(this);
+		}
+	}
+
+	private void triedToLogin() {
+
+		SessionContext.loadStoredCredentials(CredentialsStorageBuilder.StorageType.SHARED_PREFERENCES);
+		if (!SessionContext.isLoggedIn()) {
+			try {
+				SessionContext.createBasicSession("javier.gamarra", "1");
+				_loginInteractor = new LoginBasicInteractor(0);
+				_loginInteractor.setLogin("javier.gamarra");
+				_loginInteractor.setPassword("1");
+				_loginInteractor.setBasicAuthMethod(BasicAuthMethod.SCREEN_NAME);
+				_loginInteractor.login();
+				_loginInteractor.onScreenletAttached(this);
+			}
+			catch (Exception e) {
+				LiferayLogger.e("Error logging...", e);
+			}
+		}
+		else {
+			onLoginSuccess(SessionContext.getCurrentUser());
+		}
+	}
+
+	private LoginBasicInteractor _loginInteractor;
 }
