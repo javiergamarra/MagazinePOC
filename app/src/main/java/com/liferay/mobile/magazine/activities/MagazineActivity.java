@@ -37,6 +37,7 @@ public class MagazineActivity extends AppCompatActivity implements AdapterView.O
 		SectionsPagerAdapter sectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
 		_viewPager = (ViewPager) findViewById(R.id.container);
 		_viewPager.setAdapter(sectionsPagerAdapter);
+		_viewPager.setOffscreenPageLimit(2);
 
 		DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
 		ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
