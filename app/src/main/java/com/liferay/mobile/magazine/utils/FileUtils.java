@@ -2,14 +2,13 @@ package com.liferay.mobile.magazine.utils;
 
 import android.os.Environment;
 import android.support.annotation.NonNull;
-
+import com.liferay.mobile.magazine.activities.AssetUtil;
 import com.liferay.mobile.screens.assetlist.AssetEntry;
 import com.liferay.mobile.screens.context.LiferayServerContext;
 import com.liferay.mobile.screens.ddl.model.Field;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
-
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -22,8 +21,10 @@ import java.io.OutputStream;
  */
 public class FileUtils {
 
+	private static final String PATH = Environment.getExternalStorageDirectory() + "/tmp/magazinePOC/";
+
 	public static boolean triedToDownload(AssetEntry assetEntry) {
-		for (Field field : assetEntry.getChapters()) {
+		for (Field field : AssetUtil.getChapters(assetEntry)) {
 			if (isFieldDownloaded(field)) {
 				return true;
 			}
@@ -32,7 +33,7 @@ public class FileUtils {
 	}
 
 	public static boolean isAssetDownloaded(AssetEntry assetEntry) {
-		for (Field field : assetEntry.getChapters()) {
+		for (Field field : AssetUtil.getChapters(assetEntry)) {
 			if (!isFieldDownloaded(field)) {
 				return false;
 			}
@@ -58,9 +59,7 @@ public class FileUtils {
 	public static Field downloadImage(final Field field) throws IOException {
 		OkHttpClient client = new OkHttpClient();
 
-		Request request = new Request.Builder()
-			.url(LiferayServerContext.getServer() + field.getCurrentValue())
-			.build();
+		Request request = new Request.Builder().url(LiferayServerContext.getServer() + field.getCurrentValue()).build();
 
 		Response response = client.newCall(request).execute();
 
@@ -100,5 +99,4 @@ public class FileUtils {
 		output.close();
 		input.close();
 	}
-	private static final String PATH = Environment.getExternalStorageDirectory() + "/tmp/magazinePOC/";
 }

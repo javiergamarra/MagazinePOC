@@ -16,14 +16,18 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.ListView;
-
 import com.liferay.mobile.magazine.R;
 import com.liferay.mobile.magazine.utils.MenuAdapter;
 import com.liferay.mobile.magazine.utils.PicassoUtil;
 import com.liferay.mobile.screens.assetlist.AssetEntry;
 import com.liferay.mobile.screens.ddl.model.Field;
+import java.util.List;
 
 public class MagazineActivity extends AppCompatActivity implements AdapterView.OnItemClickListener {
+
+	private List<Field> _chapters;
+	private AssetEntry _assetEntry;
+	private ViewPager _viewPager;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -33,6 +37,7 @@ public class MagazineActivity extends AppCompatActivity implements AdapterView.O
 		setSupportActionBar(toolbar);
 
 		_assetEntry = getIntent().getParcelableExtra("assetEntry");
+		_chapters = AssetUtil.getChapters(_assetEntry);
 
 		SectionsPagerAdapter sectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
 		_viewPager = (ViewPager) findViewById(R.id.container);
@@ -40,18 +45,17 @@ public class MagazineActivity extends AppCompatActivity implements AdapterView.O
 		_viewPager.setOffscreenPageLimit(2);
 
 		DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-		ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-			this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+		ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawer, toolbar, R.string.navigation_drawer_open,
+			R.string.navigation_drawer_close);
 		drawer.setDrawerListener(toggle);
 		toggle.syncState();
 
 		ListView listView = (ListView) findViewById(R.id.magazine_menu);
 
-		Object[][] titles = _assetEntry.getTitles();
+		Object[][] titles = AssetUtil.getTitles(_assetEntry);
 		MenuAdapter menuAdapter = new MenuAdapter(this, R.layout.lateral_menu, titles);
 		listView.setAdapter(menuAdapter);
 		listView.setOnItemClickListener(this);
-
 	}
 
 	@Override
@@ -59,24 +63,22 @@ public class MagazineActivity extends AppCompatActivity implements AdapterView.O
 		DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
 		if (drawer.isDrawerOpen(GravityCompat.START)) {
 			drawer.closeDrawer(GravityCompat.START);
-		}
-		else {
+		} else {
 			super.onBackPressed();
 		}
 	}
 
 	@Override
 	public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-		_viewPager.setCurrentItem(_assetEntry.getTitlePosition(position));
+		_viewPager.setCurrentItem(AssetUtil.getTitlePosition(_assetEntry, position));
 
 		DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
 		drawer.closeDrawer(GravityCompat.START);
 	}
 
-	private AssetEntry _assetEntry;
-	private ViewPager _viewPager;
-
 	public static class PlaceholderFragment extends Fragment {
+
+		private static final String FIELD_VIEW_PAGER = "FIELD_VIEW_PAGER";
 
 		public PlaceholderFragment() {
 		}
@@ -90,32 +92,28 @@ public class MagazineActivity extends AppCompatActivity implements AdapterView.O
 		}
 
 		@Override
-		public View onCreateView(LayoutInflater inflater, ViewGroup container,
-								 Bundle savedInstanceState) {
+		public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 			View rootView = inflater.inflate(R.layout.magazine_item, container, false);
 
 			String url = getArguments().getString(FIELD_VIEW_PAGER);
 
-
 			ImageView imageView = (ImageView) rootView.findViewById(R.id.magazine_image);
 			PicassoUtil.getImageWithoutCache(url).into(imageView);
 
-//			if (url != null && !url.contains("storage")) {
-//				url = LiferayServerContext.getServer() + url;
-//			}
-//			WebView webView = (WebView) rootView.findViewById(R.id.magazine_webview);
-//			webView.getSettings().setSupportZoom(true);
-//			webView.getSettings().setBuiltInZoomControls(true);
-//
-//			String data = "<body><div style=\"height: 100%;display: flex;align-items: center;justify-content: center\"> <img " +
-//				"src=\"" + url + "\" width=\"100%\" /></div></body>";
-//
-//			webView.loadDataWithBaseURL("file:///android_asset/", data, "text/html", "utf-8", null);
+			//			if (url != null && !url.contains("storage")) {
+			//				url = LiferayServerContext.getServer() + url;
+			//			}
+			//			WebView webView = (WebView) rootView.findViewById(R.id.magazine_webview);
+			//			webView.getSettings().setSupportZoom(true);
+			//			webView.getSettings().setBuiltInZoomControls(true);
+			//
+			//			String data = "<body><div style=\"height: 100%;display: flex;align-items: center;justify-content: center\"> <img " +
+			//				"src=\"" + url + "\" width=\"100%\" /></div></body>";
+			//
+			//			webView.loadDataWithBaseURL("file:///android_asset/", data, "text/html", "utf-8", null);
 
 			return rootView;
 		}
-
-		private static final String FIELD_VIEW_PAGER = "FIELD_VIEW_PAGER";
 	}
 
 	public class SectionsPagerAdapter extends FragmentPagerAdapter {
@@ -126,18 +124,17 @@ public class MagazineActivity extends AppCompatActivity implements AdapterView.O
 
 		@Override
 		public Fragment getItem(int position) {
-			return PlaceholderFragment.newInstance(_assetEntry.getChapters().get(position));
+			return PlaceholderFragment.newInstance(_chapters.get(position));
 		}
 
 		@Override
 		public int getCount() {
-			return _assetEntry.getChapters().size();
+			return _chapters.size();
 		}
 
 		@Override
 		public CharSequence getPageTitle(int position) {
-			return _assetEntry.getChapters().get(position).getLabel();
+			return _chapters.get(position).getLabel();
 		}
 	}
-
 }

@@ -7,7 +7,6 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-
 import com.liferay.mobile.magazine.R;
 import com.liferay.mobile.screens.assetlist.AssetEntry;
 import com.liferay.mobile.screens.assetlist.AssetListScreenlet;
@@ -21,10 +20,8 @@ import com.liferay.mobile.screens.context.User;
 import com.liferay.mobile.screens.context.storage.CredentialsStorageBuilder;
 import com.liferay.mobile.screens.ddl.model.Field;
 import com.liferay.mobile.screens.util.LiferayLogger;
-
 import java.io.IOException;
 import java.util.List;
-
 import rx.Observable;
 import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
@@ -36,6 +33,8 @@ import static com.liferay.mobile.magazine.utils.FileUtils.isFieldDownloaded;
 import static com.liferay.mobile.magazine.utils.FileUtils.triedToDownload;
 
 public class MainActivity extends AppCompatActivity implements BaseListListener<AssetEntry>, LoginListener {
+
+	private LoginBasicInteractor _loginInteractor;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -56,15 +55,14 @@ public class MainActivity extends AppCompatActivity implements BaseListListener<
 			Intent intent = new Intent(this, MagazineActivity.class);
 			intent.putExtra("assetEntry", assetEntry);
 			startActivity(intent);
-		}
-		else {
-			final int step = 100 / assetEntry.getChapters().size();
+		} else {
+			final int step = 100 / AssetUtil.getChapters(assetEntry).size();
 			downloadProgress.setProgress(0);
 
 			final TextView downloadText = (TextView) view.findViewById(R.id.download_text);
 			downloadText.setText(R.string.downloading);
 
-			Observable.from(assetEntry.getChapters())
+			Observable.from(AssetUtil.getChapters(assetEntry))
 				.map(new Func1<Field, Object>() {
 					@Override
 					public Object call(Field field) {
@@ -73,8 +71,7 @@ public class MainActivity extends AppCompatActivity implements BaseListListener<
 								return downloadImage(field);
 							}
 							return true;
-						}
-						catch (IOException e) {
+						} catch (IOException e) {
 							return Observable.error(e);
 						}
 					}
@@ -163,15 +160,11 @@ public class MainActivity extends AppCompatActivity implements BaseListListener<
 				_loginInteractor.setBasicAuthMethod(BasicAuthMethod.SCREEN_NAME);
 				_loginInteractor.login();
 				_loginInteractor.onScreenletAttached(this);
-			}
-			catch (Exception e) {
+			} catch (Exception e) {
 				LiferayLogger.e("Error logging...", e);
 			}
-		}
-		else {
+		} else {
 			onLoginSuccess(SessionContext.getCurrentUser());
 		}
 	}
-
-	private LoginBasicInteractor _loginInteractor;
 }

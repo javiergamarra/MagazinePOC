@@ -7,7 +7,6 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
-
 import com.liferay.mobile.magazine.R;
 
 /**
@@ -32,8 +31,7 @@ public class MenuAdapter extends ArrayAdapter<Object[]> {
 
 		ImageView imageView = (ImageView) convertView.findViewById(R.id.magazine_thumbnail);
 
-		PicassoUtil
-			.getImageWithCache((String) assetEntry[1])
+		PicassoUtil.getImageWithCache((String) assetEntry[1])
 			.placeholder(R.drawable.progress_animation)
 			.into(imageView);
 

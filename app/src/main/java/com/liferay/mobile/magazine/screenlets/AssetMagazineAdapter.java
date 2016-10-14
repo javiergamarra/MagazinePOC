@@ -1,9 +1,7 @@
 package com.liferay.mobile.magazine.screenlets;
 
-import android.view.LayoutInflater;
+import android.support.annotation.NonNull;
 import android.view.View;
-import android.view.ViewGroup;
-
 import com.liferay.mobile.screens.assetlist.AssetEntry;
 import com.liferay.mobile.screens.base.list.BaseListAdapter;
 import com.liferay.mobile.screens.base.list.BaseListAdapterListener;
@@ -17,11 +15,9 @@ public class AssetMagazineAdapter extends BaseListAdapter<AssetEntry, AssetMagaz
 		super(layoutId, progressLayoutId, listener);
 	}
 
-	public AssetMagazineHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-
-		LayoutInflater inflater = LayoutInflater.from(parent.getContext());
-		View view = viewType == LAYOUT_TYPE_DEFAULT ? inflater.inflate(getLayoutId(), parent, false) : inflater.inflate(getProgressLayoutId(), parent, false);
-
+	@NonNull
+	@Override
+	public AssetMagazineHolder createViewHolder(View view, BaseListAdapterListener listener) {
 		return new AssetMagazineHolder(view, getListener());
 	}
 
@@ -29,5 +25,4 @@ public class AssetMagazineAdapter extends BaseListAdapter<AssetEntry, AssetMagaz
 	protected void fillHolder(AssetEntry entry, AssetMagazineHolder holder) {
 		holder.bind(entry);
 	}
-
 }

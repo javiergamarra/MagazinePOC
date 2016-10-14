@@ -13,7 +13,6 @@ import static com.squareup.picasso.MemoryPolicy.NO_STORE;
  */
 public class PicassoUtil {
 
-
 	public static RequestCreator getImageWithoutCache(String url) {
 		return getImageWithCache(url).memoryPolicy(NO_CACHE, NO_STORE);
 	}
@@ -24,6 +23,4 @@ public class PicassoUtil {
 			.error(android.R.drawable.ic_delete)
 			.fit();
 	}
-
-
 }

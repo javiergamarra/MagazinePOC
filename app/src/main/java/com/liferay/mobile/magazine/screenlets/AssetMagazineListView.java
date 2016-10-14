@@ -5,22 +5,19 @@ import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
 import android.widget.ProgressBar;
-
 import com.liferay.mobile.magazine.R;
+import com.liferay.mobile.magazine.activities.AssetUtil;
 import com.liferay.mobile.magazine.utils.FileUtils;
 import com.liferay.mobile.screens.assetlist.AssetEntry;
 import com.liferay.mobile.screens.base.list.BaseListScreenletView;
-import com.liferay.mobile.screens.ddl.XSDParser;
 import com.liferay.mobile.screens.ddl.model.Field;
 import com.liferay.mobile.screens.util.LiferayLogger;
 import com.liferay.mobile.screens.viewsets.defaultviews.ddl.list.DividerItemDecoration;
-
-import org.xml.sax.SAXException;
-
 import java.io.File;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import org.xml.sax.SAXException;
 
 import static com.liferay.mobile.magazine.utils.FileUtils.getPath;
 import static com.liferay.mobile.magazine.utils.FileUtils.isFieldDownloaded;
@@ -30,6 +27,8 @@ import static com.liferay.mobile.magazine.utils.FileUtils.isFieldDownloaded;
  */
 public class AssetMagazineListView
 	extends BaseListScreenletView<AssetEntry, AssetMagazineHolder, AssetMagazineAdapter> {
+
+	private static final int SPAN_COUNT = 2;
 
 	public AssetMagazineListView(Context context) {
 		super(context);
@@ -49,14 +48,15 @@ public class AssetMagazineListView
 			for (AssetEntry magazine : serverEntries) {
 				Map<String, Object> object = (Map<String, Object>) magazine.getValues().get("object");
 
-				XSDParser xsdParser = new XSDParser();
-				List<Field> formFields = xsdParser.parse((String) ((Map) object.get("structure")).get("xsd"), Locale.ENGLISH);
+				ExtendedXsdParser xsdParser = new ExtendedXsdParser();
+				List<Field> formFields =
+					xsdParser.parse((String) ((Map) object.get("structure")).get("xsd"), Locale.ENGLISH);
 				List<Field> fields = xsdParser.createForm(formFields, (String) object.get("content"));
-				magazine.setFields(fields);
+				AssetUtil.setFields(magazine, fields);
+
 				checkIfFileExists(magazine);
 			}
-		}
-		catch (SAXException e) {
+		} catch (SAXException e) {
 			LiferayLogger.e("Error parsing form", e);
 		}
 
@@ -89,13 +89,12 @@ public class AssetMagazineListView
 
 		DividerItemDecoration dividerItemDecoration = getDividerDecoration();
 		if (dividerItemDecoration != null) {
-			_recyclerView.addItemDecoration(
-				getDividerDecoration());
+			_recyclerView.addItemDecoration(getDividerDecoration());
 		}
 	}
 
 	private void checkIfFileExists(AssetEntry assetEntry) {
-		for (Field field : assetEntry.getChapters()) {
+		for (Field field : AssetUtil.getChapters(assetEntry)) {
 			if (isFieldDownloaded(field)) {
 				continue;
 			}
@@ -114,5 +113,4 @@ public class AssetMagazineListView
 			}
 		}
 	}
-	private static final int SPAN_COUNT = 2;
 }
