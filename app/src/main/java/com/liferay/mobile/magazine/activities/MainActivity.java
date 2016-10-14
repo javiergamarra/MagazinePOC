@@ -8,18 +8,17 @@ import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import com.liferay.mobile.magazine.R;
-import com.liferay.mobile.screens.assetlist.AssetEntry;
-import com.liferay.mobile.screens.assetlist.AssetListScreenlet;
-import com.liferay.mobile.screens.auth.BasicAuthMethod;
+import com.liferay.mobile.screens.asset.AssetEntry;
+import com.liferay.mobile.screens.asset.list.AssetListScreenlet;
 import com.liferay.mobile.screens.auth.login.LoginListener;
 import com.liferay.mobile.screens.auth.login.interactor.LoginBasicInteractor;
 import com.liferay.mobile.screens.base.list.BaseListListener;
-import com.liferay.mobile.screens.base.list.BaseListScreenlet;
 import com.liferay.mobile.screens.context.SessionContext;
 import com.liferay.mobile.screens.context.User;
 import com.liferay.mobile.screens.context.storage.CredentialsStorageBuilder;
 import com.liferay.mobile.screens.ddl.model.Field;
 import com.liferay.mobile.screens.util.LiferayLogger;
+import com.liferay.mobile.screens.webcontent.WebContent;
 import java.io.IOException;
 import java.util.List;
 import rx.Observable;
@@ -31,6 +30,7 @@ import rx.schedulers.Schedulers;
 import static com.liferay.mobile.magazine.utils.FileUtils.downloadImage;
 import static com.liferay.mobile.magazine.utils.FileUtils.isFieldDownloaded;
 import static com.liferay.mobile.magazine.utils.FileUtils.triedToDownload;
+import static com.liferay.mobile.screens.auth.BasicAuthMethod.SCREEN_NAME;
 
 public class MainActivity extends AppCompatActivity implements BaseListListener<AssetEntry>, LoginListener {
 
@@ -47,6 +47,16 @@ public class MainActivity extends AppCompatActivity implements BaseListListener<
 	}
 
 	@Override
+	public void onListPageFailed(int startRow, Exception e) {
+
+	}
+
+	@Override
+	public void onListPageReceived(int startRow, int endRow, List<AssetEntry> entries, int rowCount) {
+
+	}
+
+	@Override
 	public void onListItemSelected(final AssetEntry assetEntry, View view) {
 
 		final ProgressBar downloadProgress = (ProgressBar) view.findViewById(R.id.download_progress);
@@ -56,13 +66,14 @@ public class MainActivity extends AppCompatActivity implements BaseListListener<
 			intent.putExtra("assetEntry", assetEntry);
 			startActivity(intent);
 		} else {
-			final int step = 100 / AssetUtil.getChapters(assetEntry).size();
+			List<Field> chapters = ((WebContent) assetEntry).getDDMStructure().getFields();
+			final int step = 100 / chapters.size();
 			downloadProgress.setProgress(0);
 
 			final TextView downloadText = (TextView) view.findViewById(R.id.download_text);
 			downloadText.setText(R.string.downloading);
 
-			Observable.from(AssetUtil.getChapters(assetEntry))
+			Observable.from(chapters)
 				.map(new Func1<Field, Object>() {
 					@Override
 					public Object call(Field field) {
@@ -101,31 +112,6 @@ public class MainActivity extends AppCompatActivity implements BaseListListener<
 	}
 
 	@Override
-	public void onListPageFailed(BaseListScreenlet source, int page, Exception e) {
-
-	}
-
-	@Override
-	public void onListPageReceived(BaseListScreenlet source, int page, List<AssetEntry> entries, int rowCount) {
-
-	}
-
-	@Override
-	public void loadingFromCache(boolean success) {
-
-	}
-
-	@Override
-	public void retrievingOnline(boolean triedInCache, Exception e) {
-
-	}
-
-	@Override
-	public void storingToCache(Object object) {
-
-	}
-
-	@Override
 	public void onLoginSuccess(User user) {
 
 		SessionContext.storeCredentials(CredentialsStorageBuilder.StorageType.SHARED_PREFERENCES);
@@ -152,19 +138,17 @@ public class MainActivity extends AppCompatActivity implements BaseListListener<
 
 		SessionContext.loadStoredCredentials(CredentialsStorageBuilder.StorageType.SHARED_PREFERENCES);
 		if (!SessionContext.isLoggedIn()) {
-			try {
-				SessionContext.createBasicSession("javier.gamarra", "1");
-				_loginInteractor = new LoginBasicInteractor(0);
-				_loginInteractor.setLogin("javier.gamarra");
-				_loginInteractor.setPassword("1");
-				_loginInteractor.setBasicAuthMethod(BasicAuthMethod.SCREEN_NAME);
-				_loginInteractor.login();
-				_loginInteractor.onScreenletAttached(this);
-			} catch (Exception e) {
-				LiferayLogger.e("Error logging...", e);
-			}
+			SessionContext.createBasicSession("javier.gamarra", "1");
+			_loginInteractor = new LoginBasicInteractor();
+			_loginInteractor.start("javier.gamarra", "1", SCREEN_NAME);
+			_loginInteractor.onScreenletAttached(this);
 		} else {
 			onLoginSuccess(SessionContext.getCurrentUser());
 		}
+	}
+
+	@Override
+	public void error(Exception e, String userAction) {
+
 	}
 }

@@ -2,10 +2,10 @@ package com.liferay.mobile.magazine.utils;
 
 import android.os.Environment;
 import android.support.annotation.NonNull;
-import com.liferay.mobile.magazine.activities.AssetUtil;
-import com.liferay.mobile.screens.assetlist.AssetEntry;
+import com.liferay.mobile.screens.asset.AssetEntry;
 import com.liferay.mobile.screens.context.LiferayServerContext;
 import com.liferay.mobile.screens.ddl.model.Field;
+import com.liferay.mobile.screens.webcontent.WebContent;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
@@ -24,7 +24,7 @@ public class FileUtils {
 	private static final String PATH = Environment.getExternalStorageDirectory() + "/tmp/magazinePOC/";
 
 	public static boolean triedToDownload(AssetEntry assetEntry) {
-		for (Field field : AssetUtil.getChapters(assetEntry)) {
+		for (Field field : ((WebContent) assetEntry).getDDMStructure().getFields()) {
 			if (isFieldDownloaded(field)) {
 				return true;
 			}
@@ -33,7 +33,7 @@ public class FileUtils {
 	}
 
 	public static boolean isAssetDownloaded(AssetEntry assetEntry) {
-		for (Field field : AssetUtil.getChapters(assetEntry)) {
+		for (Field field : ((WebContent) assetEntry).getDDMStructure().getFields()) {
 			if (!isFieldDownloaded(field)) {
 				return false;
 			}

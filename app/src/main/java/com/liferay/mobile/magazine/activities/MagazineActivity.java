@@ -15,12 +15,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ImageView;
-import android.widget.ListView;
 import com.liferay.mobile.magazine.R;
-import com.liferay.mobile.magazine.utils.MenuAdapter;
 import com.liferay.mobile.magazine.utils.PicassoUtil;
-import com.liferay.mobile.screens.assetlist.AssetEntry;
+import com.liferay.mobile.screens.asset.AssetEntry;
 import com.liferay.mobile.screens.ddl.model.Field;
+import com.liferay.mobile.screens.webcontent.WebContent;
 import java.util.List;
 
 public class MagazineActivity extends AppCompatActivity implements AdapterView.OnItemClickListener {
@@ -37,7 +36,10 @@ public class MagazineActivity extends AppCompatActivity implements AdapterView.O
 		setSupportActionBar(toolbar);
 
 		_assetEntry = getIntent().getParcelableExtra("assetEntry");
-		_chapters = AssetUtil.getChapters(_assetEntry);
+
+		WebContent magazine = (WebContent) _assetEntry;
+
+		_chapters = magazine.getDDMStructure().getFields();
 
 		SectionsPagerAdapter sectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
 		_viewPager = (ViewPager) findViewById(R.id.container);
@@ -50,12 +52,12 @@ public class MagazineActivity extends AppCompatActivity implements AdapterView.O
 		drawer.setDrawerListener(toggle);
 		toggle.syncState();
 
-		ListView listView = (ListView) findViewById(R.id.magazine_menu);
-
-		Object[][] titles = AssetUtil.getTitles(_assetEntry);
-		MenuAdapter menuAdapter = new MenuAdapter(this, R.layout.lateral_menu, titles);
-		listView.setAdapter(menuAdapter);
-		listView.setOnItemClickListener(this);
+		//FIXME
+		//ListView listView = (ListView) findViewById(R.id.magazine_menu);
+		//Object[][] titles = magazine.getDDMStructure().
+		//MenuAdapter menuAdapter = new MenuAdapter(this, R.layout.lateral_menu, titles);
+		//listView.setAdapter(menuAdapter);
+		//listView.setOnItemClickListener(this);
 	}
 
 	@Override
@@ -70,7 +72,9 @@ public class MagazineActivity extends AppCompatActivity implements AdapterView.O
 
 	@Override
 	public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-		_viewPager.setCurrentItem(AssetUtil.getTitlePosition(_assetEntry, position));
+
+		//FIXME
+		//_viewPager.setCurrentItem(AssetUtil.getTitlePosition(_assetEntry, position));
 
 		DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
 		drawer.closeDrawer(GravityCompat.START);

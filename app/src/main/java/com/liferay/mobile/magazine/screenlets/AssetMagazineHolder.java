@@ -5,12 +5,12 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import com.liferay.mobile.magazine.R;
-import com.liferay.mobile.magazine.activities.AssetUtil;
 import com.liferay.mobile.magazine.utils.PicassoUtil;
-import com.liferay.mobile.screens.assetlist.AssetEntry;
+import com.liferay.mobile.screens.asset.AssetEntry;
 import com.liferay.mobile.screens.base.list.BaseListAdapter;
 import com.liferay.mobile.screens.base.list.BaseListAdapterListener;
 import com.liferay.mobile.screens.ddl.model.Field;
+import com.liferay.mobile.screens.webcontent.WebContent;
 
 import static com.liferay.mobile.magazine.utils.FileUtils.isAssetDownloaded;
 
@@ -21,6 +21,7 @@ public class AssetMagazineHolder extends BaseListAdapter.ViewHolder implements V
 	private final TextView magazinePrize;
 	private final ProgressBar magazineProgress;
 	private final BaseListAdapterListener _listener;
+
 	public AssetMagazineHolder(View view, BaseListAdapterListener listener) {
 		super(view, listener);
 
@@ -39,12 +40,15 @@ public class AssetMagazineHolder extends BaseListAdapter.ViewHolder implements V
 	}
 
 	public void bind(AssetEntry assetEntry) {
-		magazineTitle.setText((String) AssetUtil.getFieldByName(assetEntry, "magazineTitle").getCurrentValue());
-		magazinePrize.setText((String) AssetUtil.getFieldByName(assetEntry, "price").getCurrentValue());
+
+		WebContent magazine = (WebContent) assetEntry;
+
+		magazineTitle.setText((String) magazine.getDDMStructure().getFieldByName("magazineTitle").getCurrentValue());
+		magazinePrize.setText((String) magazine.getDDMStructure().getFieldByName("price").getCurrentValue());
 
 		magazineProgress.setProgress(isAssetDownloaded(assetEntry) ? 100 : 0);
 
-		Field magazineThumbnail = AssetUtil.getFieldByName(assetEntry, "magazineThumbnail");
+		Field magazineThumbnail = magazine.getDDMStructure().getFieldByName("magazineThumbnail");
 		if (magazineThumbnail != null) {
 			String url = (String) magazineThumbnail.getCurrentValue();
 			PicassoUtil.getImageWithCache(url).placeholder(R.drawable.progress_animation).into(imageView);

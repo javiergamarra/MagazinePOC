@@ -2,7 +2,7 @@ package com.liferay.mobile.magazine.screenlets;
 
 import android.support.annotation.NonNull;
 import android.view.View;
-import com.liferay.mobile.screens.assetlist.AssetEntry;
+import com.liferay.mobile.screens.asset.AssetEntry;
 import com.liferay.mobile.screens.base.list.BaseListAdapter;
 import com.liferay.mobile.screens.base.list.BaseListAdapterListener;
 

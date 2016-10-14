@@ -6,18 +6,13 @@ import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
 import android.widget.ProgressBar;
 import com.liferay.mobile.magazine.R;
-import com.liferay.mobile.magazine.activities.AssetUtil;
 import com.liferay.mobile.magazine.utils.FileUtils;
-import com.liferay.mobile.screens.assetlist.AssetEntry;
+import com.liferay.mobile.screens.asset.AssetEntry;
 import com.liferay.mobile.screens.base.list.BaseListScreenletView;
 import com.liferay.mobile.screens.ddl.model.Field;
-import com.liferay.mobile.screens.util.LiferayLogger;
-import com.liferay.mobile.screens.viewsets.defaultviews.ddl.list.DividerItemDecoration;
+import com.liferay.mobile.screens.webcontent.WebContent;
 import java.io.File;
 import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import org.xml.sax.SAXException;
 
 import static com.liferay.mobile.magazine.utils.FileUtils.getPath;
 import static com.liferay.mobile.magazine.utils.FileUtils.isFieldDownloaded;
@@ -43,24 +38,19 @@ public class AssetMagazineListView
 	}
 
 	@Override
-	public void showFinishOperation(int page, List<AssetEntry> serverEntries, int rowCount) {
-		try {
-			for (AssetEntry magazine : serverEntries) {
-				Map<String, Object> object = (Map<String, Object>) magazine.getValues().get("object");
+	public void showFinishOperation(int startRow, int endRow, List<AssetEntry> serverEntries, int totalRowCount) {
 
-				ExtendedXsdParser xsdParser = new ExtendedXsdParser();
-				List<Field> formFields =
-					xsdParser.parse((String) ((Map) object.get("structure")).get("xsd"), Locale.ENGLISH);
-				List<Field> fields = xsdParser.createForm(formFields, (String) object.get("content"));
-				AssetUtil.setFields(magazine, fields);
+		for (AssetEntry assetEntry : serverEntries) {
 
-				checkIfFileExists(magazine);
-			}
-		} catch (SAXException e) {
-			LiferayLogger.e("Error parsing form", e);
+			WebContent magazine = (WebContent) assetEntry;
+
+			//FIXME
+			//List<Field> fields = magazine.getDDMStructure().getFields();
+
+			checkIfFileExists(magazine);
 		}
 
-		super.showFinishOperation(page, serverEntries, rowCount);
+		super.showFinishOperation(startRow, endRow, serverEntries, totalRowCount);
 	}
 
 	@Override
@@ -79,22 +69,22 @@ public class AssetMagazineListView
 		int itemLayoutId = getItemLayoutId();
 		int itemProgressLayoutId = getItemProgressLayoutId();
 
-		_recyclerView = (RecyclerView) findViewById(com.liferay.mobile.screens.R.id.liferay_recycler_list);
-		_progressBar = (ProgressBar) findViewById(com.liferay.mobile.screens.R.id.liferay_progress);
+		recyclerView = (RecyclerView) findViewById(com.liferay.mobile.screens.R.id.liferay_recycler_list);
+		progressBar = (ProgressBar) findViewById(com.liferay.mobile.screens.R.id.liferay_progress);
 
 		AssetMagazineAdapter adapter = createListAdapter(itemLayoutId, itemProgressLayoutId);
-		_recyclerView.setAdapter(adapter);
-		_recyclerView.setHasFixedSize(true);
-		_recyclerView.setLayoutManager(new GridLayoutManager(getContext(), SPAN_COUNT));
+		recyclerView.setAdapter(adapter);
+		recyclerView.setHasFixedSize(true);
+		recyclerView.setLayoutManager(new GridLayoutManager(getContext(), SPAN_COUNT));
 
-		DividerItemDecoration dividerItemDecoration = getDividerDecoration();
+		RecyclerView.ItemDecoration dividerItemDecoration = getDividerDecoration();
 		if (dividerItemDecoration != null) {
-			_recyclerView.addItemDecoration(getDividerDecoration());
+			recyclerView.addItemDecoration(getDividerDecoration());
 		}
 	}
 
 	private void checkIfFileExists(AssetEntry assetEntry) {
-		for (Field field : AssetUtil.getChapters(assetEntry)) {
+		for (Field field : ((WebContent) assetEntry).getDDMStructure().getFields()) {
 			if (isFieldDownloaded(field)) {
 				continue;
 			}
